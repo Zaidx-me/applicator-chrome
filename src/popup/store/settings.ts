@@ -15,7 +15,6 @@ const DEFAULT_SETTINGS: AppSettings = {
   skills: '',
   onboardingDone: false,
   themeMode: 'light',
-  aiModel: 'meta/llama-3.1-8b-instruct',
   profile: {fullName: '', email: '', phone: '', cvUri: null, cvFileName: null, cvContent: null, profileImageUri: null},
 };
 

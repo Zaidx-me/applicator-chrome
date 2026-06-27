@@ -48,7 +48,7 @@ export default function OnboardingScreen({settings, themeMode, colors, onDone}: 
       setCvContent(text);
       setIsExtracting(true);
       try {
-        const profile = await extractProfileFromCv(text, settings.aiModel);
+        const profile = await extractProfileFromCv(text);
         setExtractedProfile(profile);
         setVerifFullName(profile.fullName);
         setVerifEmail(profile.email);

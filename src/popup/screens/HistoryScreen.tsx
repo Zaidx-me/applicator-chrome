@@ -31,7 +31,7 @@ export default function HistoryScreen({settings, colors, themeMode, onBack, onVi
       const result = await generateFollowUp(
         {subject: letter.subject, body: letter.body, company: letter.company, role: letter.role},
         {fullName: settings.profile.fullName, email: settings.profile.email},
-        settings.aiModel,
+
       );
       const uri = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(letter.toEmail)}&su=${encodeURIComponent(result.subject)}&body=${encodeURIComponent(result.body)}`;
       chrome.tabs.create({url: uri});

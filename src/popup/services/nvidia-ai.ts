@@ -2,6 +2,7 @@ import {CONFIG} from '../../config';
 import {CvExtractedProfile} from '../../types';
 
 const NVIDIA_ENDPOINT = 'https://integrate.api.nvidia.com/v1/chat/completions';
+const MODEL = 'meta/llama-3.1-8b-instruct';
 
 async function callNvidiaApi(body: Record<string, unknown>): Promise<string> {
   const start = Date.now();
@@ -18,9 +19,9 @@ async function callNvidiaApi(body: Record<string, unknown>): Promise<string> {
   return data.choices?.[0]?.message?.content || '';
 }
 
-export async function extractProfileFromCv(cvText: string, model?: string): Promise<CvExtractedProfile> {
+export async function extractProfileFromCv(cvText: string): Promise<CvExtractedProfile> {
   const response = await callNvidiaApi({
-    model: model || 'meta/llama-3.1-8b-instruct',
+    model: MODEL,
     messages: [
       {role: 'system', content: `You are a precision CV/resume parsing engine. Extract structured profile data from raw CV text.
 
@@ -57,13 +58,12 @@ export async function extractAllJobs(
   messagesText: string,
   skills: string,
   cvContent?: string,
-  model?: string,
 ): Promise<{company: string; role_type: string; location?: string; extracted_email?: string}[]> {
   const cvSection = cvContent ? `\nCANDIDATE'S CV:\n---\n${cvContent.substring(0, 4000)}\n---\n` : '';
   const profileSection = `CANDIDATE SKILLS: ${skills || 'Not provided'}${cvSection}`;
 
   const response = await callNvidiaApi({
-    model: model || 'meta/llama-3.1-8b-instruct',
+    model: MODEL,
     messages: [
       {role: 'system', content: `You extract job postings from text. Return a JSON array of {company, role_type, location, extracted_email}. Only the JSON array. No explanation.`},
       {role: 'user', content: `${profileSection}\n\nTEXT TO EXTRACT FROM:\n${messagesText}`},
@@ -82,12 +82,11 @@ export async function extractAllJobs(
 export async function generateCoverLetter(
   job: {company: string; role_type: string; extracted_email?: string},
   profile: {fullName: string; email: string; phone: string; skills: string[]; cvContent?: string | null},
-  model?: string,
 ): Promise<{subject: string; body: string}> {
   const skillsText = profile.skills.join(', ');
   const cvSection = profile.cvContent ? `\nCV CONTEXT:\n${profile.cvContent.substring(0, 2000)}\n` : '';
   const response = await callNvidiaApi({
-    model: model || 'meta/llama-3.1-8b-instruct',
+    model: MODEL,
     messages: [
       {role: 'system', content: `You are a professional cover letter writer. Generate a compelling cover letter email.
 
@@ -120,10 +119,9 @@ Your email body here`},
 export async function chatCompletion(
   messages: {role: string; content: string}[],
   systemPrompt: string,
-  model?: string,
 ): Promise<string> {
   return callNvidiaApi({
-    model: model || 'meta/llama-3.1-8b-instruct',
+    model: MODEL,
     messages: [{role: 'system', content: systemPrompt}, ...messages],
     temperature: 0.85,
     max_tokens: 2048,
@@ -133,10 +131,9 @@ export async function chatCompletion(
 export async function generateFollowUp(
   coverLetter: {subject: string; body: string; company: string; role: string},
   profile: {fullName: string; email: string},
-  model?: string,
 ): Promise<{subject: string; body: string}> {
   const response = await callNvidiaApi({
-    model: model || 'meta/llama-3.1-8b-instruct',
+    model: MODEL,
     messages: [
       {role: 'system', content: 'You write concise follow-up emails for job applications. Return ONLY the body text.'},
       {role: 'user', content: `Write a follow-up email for ${coverLetter.role} at ${coverLetter.company}.\nCandidate: ${profile.fullName} (${profile.email})\nOriginal subject: "${coverLetter.subject}"\nOriginal body: ${coverLetter.body.substring(0, 1000)}`},

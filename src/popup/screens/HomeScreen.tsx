@@ -32,7 +32,7 @@ export default function HomeScreen({settings, colors, themeMode, onNavigate, onS
     if (!inputText.trim()) return;
     setExtracting(true);
     try {
-      const jobs = await extractAllJobs(inputText, settings.skills, settings.profile.cvContent || undefined, settings.aiModel);
+      const jobs = await extractAllJobs(inputText, settings.skills, settings.profile.cvContent || undefined);
       const result = {
         id: Date.now().toString(),
         jobs,
@@ -62,7 +62,7 @@ export default function HomeScreen({settings, colors, themeMode, onNavigate, onS
         phone: settings.profile.phone,
         skills: settings.skills.split(',').map(s => s.trim()).filter(Boolean),
         cvContent: settings.profile.cvContent,
-      }, settings.aiModel);
+                            });
       const letter: CoverLetter = {
         id: Date.now().toString(),
         jobId: resultId,
@@ -188,7 +188,7 @@ export default function HomeScreen({settings, colors, themeMode, onNavigate, onS
                               phone: settings.profile.phone,
                               skills: settings.skills.split(',').map((s: string) => s.trim()).filter(Boolean),
                               cvContent: settings.profile.cvContent,
-                            }, settings.aiModel);
+      });
                             const letter: CoverLetter = {
                               id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                               jobId: '',

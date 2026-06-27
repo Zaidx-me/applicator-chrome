@@ -36,7 +36,6 @@ export default function ChatScreen({settings, colors, onBack}: Props) {
       const text = await chatCompletion(
         updated.map(m => ({role: m.role, content: m.content})),
         'You are a helpful career assistant. Help with cover letters, job applications, interview prep, and career advice.',
-        settings.aiModel,
       );
       const assistantMsg: ChatMessage = {id: (Date.now() + 1).toString(), role: 'assistant', content: text, timestamp: Date.now()};
       const final = [...updated, assistantMsg];

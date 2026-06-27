@@ -57,6 +57,5 @@ export interface AppSettings {
   skills: string;
   onboardingDone: boolean;
   themeMode: 'light' | 'dark';
-  aiModel: string;
   profile: UserProfile;
 }

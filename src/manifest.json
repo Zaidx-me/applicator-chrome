@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Generate cover letters for job applications using AI",
   "permissions": ["storage", "activeTab", "scripting", "sidePanel"],
-  "host_permissions": ["https://*.linkedin.com/*", "https://*.indeed.com/*", "https://mail.google.com/*"],
+  "host_permissions": ["https://*.linkedin.com/*", "https://*.indeed.com/*", "https://mail.google.com/*", "https://integrate.api.nvidia.com/*"],
   "action": {
     "default_popup": "popup.html",
     "default_title": "Applicator",
