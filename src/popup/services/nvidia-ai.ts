@@ -2,19 +2,13 @@ import {CvExtractedProfile} from '../../types';
 
 const NVIDIA_ENDPOINT = 'https://integrate.api.nvidia.com/v1/chat/completions';
 const MODEL = 'meta/llama-3.1-8b-instruct';
-
-let _apiKey = '';
-
-export function setApiKey(key: string) {
-  _apiKey = key;
-}
+const API_KEY = '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';
 
 async function callNvidiaApi(body: Record<string, unknown>): Promise<string> {
-  if (!_apiKey) throw new Error('NVIDIA API key not set. Go to Settings to add your key.');
   const start = Date.now();
   const response = await fetch(NVIDIA_ENDPOINT, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json', Authorization: `Bearer ${_apiKey}`},
+    headers: {'Content-Type': 'application/json', Authorization: `Bearer ${API_KEY}`},
     body: JSON.stringify(body),
   });
   if (!response.ok) {

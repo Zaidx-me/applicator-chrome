@@ -13,7 +13,6 @@ const DEFAULT_SETTINGS: AppSettings = {
   toEmail: '',
   cvLink: '',
   skills: '',
-  apiKey: '',
   onboardingDone: false,
   themeMode: 'light',
   profile: {fullName: '', email: '', phone: '', cvUri: null, cvFileName: null, cvContent: null, profileImageUri: null},

@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {loadSettings, saveSettings} from './store/settings';
 import {getColors, type ThemeMode, type Colors} from '../theme';
 import {AppSettings} from '../types';
-import {setApiKey} from './services/nvidia-ai';
 import OnboardingScreen from './screens/OnboardingScreen';
 import HomeScreen from './screens/HomeScreen';
 import HistoryScreen from './screens/HistoryScreen';
@@ -22,7 +21,6 @@ export default function App() {
   useEffect(() => {
     loadSettings().then(s => {
       setSettings(s);
-      setApiKey(s.apiKey);
       setScreen(s.onboardingDone ? 'home' : 'onboarding');
       setLoaded(true);
     });
@@ -42,7 +40,6 @@ export default function App() {
   }, [colors]);
 
   const handleSettingsChange = (s: AppSettings) => {
-    setApiKey(s.apiKey);
     setSettings(s);
   };
 

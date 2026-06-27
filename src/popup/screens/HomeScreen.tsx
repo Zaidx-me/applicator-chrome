@@ -73,11 +73,6 @@ export default function HomeScreen({settings, colors, themeMode, onNavigate, onS
   };
 
   const generateOne = async (job: {company: string; role_type: string; extracted_email?: string}) => {
-    if (!settings.apiKey) {
-      alert('Please set your NVIDIA API key in Settings first.');
-      onNavigate('settings');
-      return;
-    }
     try {
       return await generateCoverLetter(job, {
         fullName: settings.profile.fullName,
@@ -119,11 +114,6 @@ export default function HomeScreen({settings, colors, themeMode, onNavigate, onS
   };
 
   const handleGenerateAll = async (result: any) => {
-    if (!settings.apiKey) {
-      alert('Please set your NVIDIA API key in Settings first.');
-      onNavigate('settings');
-      return;
-    }
     setGeneratingAll(true);
     try {
       for (const job of result.jobs) {
@@ -211,14 +201,6 @@ export default function HomeScreen({settings, colors, themeMode, onNavigate, onS
       </div>
 
       <div style={{flex: 1, overflow: 'auto', padding: '12px 16px'}}>
-        {!settings.apiKey && (
-          <div style={{marginBottom: 12, padding: '10px 14px', borderRadius: RADIUS.sm, background: 'rgba(234,179,8,0.12)', border: '1px solid rgba(234,179,8,0.3)', display: 'flex', alignItems: 'center', gap: 8}}>
-            <Icon name="alert" size={18} color="#CA8A04" />
-            <span style={{fontSize: 13, color: '#CA8A04', flex: 1}}>Set your NVIDIA API key in Settings</span>
-            <button onClick={() => onNavigate('settings')} style={{padding: '4px 10px', border: 'none', borderRadius: RADIUS.sm, background: '#CA8A04', color: '#FFF', fontSize: 12, fontWeight: 600, cursor: 'pointer'}}>Settings</button>
-          </div>
-        )}
-
         <div style={s.glassCard}>
           <label style={{fontSize: 12, fontWeight: 600, color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8, display: 'block'}}>
             Paste job description

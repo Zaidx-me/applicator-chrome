@@ -2,7 +2,7 @@ import React, {useState, useRef} from 'react';
 import {AppSettings, CvExtractedProfile} from '../../types';
 import {SPACING, RADIUS, type Colors, type ThemeMode} from '../../theme';
 import {saveSettings} from '../store/settings';
-import {extractProfileFromCv, setApiKey} from '../services/nvidia-ai';
+import {extractProfileFromCv} from '../services/nvidia-ai';
 import Icon from '../components/Icon';
 
 interface Props {
@@ -30,7 +30,6 @@ export default function OnboardingScreen({settings, themeMode, colors, onDone}: 
   const [skillInput, setSkillInput] = useState('');
   const [editingSkillIdx, setEditingSkillIdx] = useState(-1);
   const [editingSkillVal, setEditingSkillVal] = useState('');
-  const [apiKeyInput, setApiKeyInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const c = colors;
@@ -87,7 +86,6 @@ export default function OnboardingScreen({settings, themeMode, colors, onDone}: 
       ...settings,
       onboardingDone: true,
       skills: verifSkills.join(', '),
-      apiKey: apiKeyInput || settings.apiKey,
       profile: {
         ...settings.profile,
         fullName: verifFullName,
@@ -97,7 +95,6 @@ export default function OnboardingScreen({settings, themeMode, colors, onDone}: 
         cvFileName: cvFileName || settings.profile.cvFileName,
       },
     };
-    setApiKey(updated.apiKey);
     await saveSettings(updated);
     onDone();
   };
@@ -171,11 +168,6 @@ export default function OnboardingScreen({settings, themeMode, colors, onDone}: 
             <input style={s.input} value={verifPhone} onChange={e => setVerifPhone(e.target.value)} placeholder="+1 (555) 123-4567" />
             <label style={s.label}>EDUCATION</label>
             <input style={s.input} value={verifEducation} onChange={e => setVerifEducation(e.target.value)} placeholder="BS Computer Science, XYZ University" />
-            <div style={{marginTop: 8, marginBottom: 12, padding: 12, background: isLight ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.1)', borderRadius: RADIUS.md, border: `1px solid ${isLight ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.2)'}`}}>
-              <label style={{fontSize: 11, fontWeight: 600, color: c.accent, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.8}}>NVIDIA API Key (required)</label>
-              <input value={apiKeyInput} onChange={e => setApiKeyInput(e.target.value)} placeholder="nvapi-..." type="password" style={s.input} />
-              <p style={{fontSize: 11, color: c.textTertiary, margin: '4px 0 0 0'}}>Get a free key at <span style={{color: c.accent}}>build.nvidia.com</span></p>
-            </div>
             <label style={s.label}>SKILLS</label>
             <div style={s.skillsGrid}>
               {verifSkills.map((skill, i) => (
