@@ -10,6 +10,8 @@ module.exports = (_env, argv) => {
       background: './src/background/service-worker.ts',
       'content-linkedin': './src/content/linkedin.ts',
       'content-indeed': './src/content/indeed.ts',
+      'content-whatsapp': './src/content/whatsapp.ts',
+      'content-rozee': './src/content/rozee.ts',
     },
     output: {
       path: path.resolve(__dirname, 'dist'),

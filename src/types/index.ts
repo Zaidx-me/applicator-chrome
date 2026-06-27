@@ -55,6 +55,7 @@ export interface AppSettings {
   toEmail: string;
   cvLink: string;
   skills: string;
+  apiKey: string;
   onboardingDone: boolean;
   themeMode: 'light' | 'dark';
   profile: UserProfile;

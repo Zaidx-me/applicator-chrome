@@ -1,14 +1,20 @@
-import {CONFIG} from '../../config';
 import {CvExtractedProfile} from '../../types';
 
 const NVIDIA_ENDPOINT = 'https://integrate.api.nvidia.com/v1/chat/completions';
 const MODEL = 'meta/llama-3.1-8b-instruct';
 
+let _apiKey = '';
+
+export function setApiKey(key: string) {
+  _apiKey = key;
+}
+
 async function callNvidiaApi(body: Record<string, unknown>): Promise<string> {
+  if (!_apiKey) throw new Error('NVIDIA API key not set. Go to Settings to add your key.');
   const start = Date.now();
   const response = await fetch(NVIDIA_ENDPOINT, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json', Authorization: `Bearer ${CONFIG.NVIDIA_API_KEY}`},
+    headers: {'Content-Type': 'application/json', Authorization: `Bearer ${_apiKey}`},
     body: JSON.stringify(body),
   });
   if (!response.ok) {
@@ -38,7 +44,7 @@ Output ONLY valid JSON. No markdown. No explanation. No trailing text.
 Rules:
 - fullName: extract from CV header/contact block. Strip job titles, honorifics.
 - email: primary email from contact section. Never fabricate.
-- phone: normalize Pakistani numbers to +92 3XX XXXXXXX format. International numbers as-is.
+- phone: normalize to +92 3XX XXXXXXX format. International numbers as-is.
 - skills: extract ALL technical and professional skills mentioned.
 - education: brief summary (degree, field, institution).`},
       {role: 'user', content: cvText.substring(0, 8000)},

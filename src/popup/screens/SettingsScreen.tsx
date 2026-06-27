@@ -17,6 +17,7 @@ export default function SettingsScreen({settings, colors, themeMode, onBack, onS
   const [email, setEmail] = useState(settings.profile.email);
   const [phone, setPhone] = useState(settings.profile.phone);
   const [skillsText, setSkillsText] = useState(settings.skills);
+  const [apiKey, setApiKey] = useState(settings.apiKey);
   const [mode, setMode] = useState(themeMode);
   const [saving, setSaving] = useState(false);
   const c = colors;
@@ -36,6 +37,7 @@ export default function SettingsScreen({settings, colors, themeMode, onBack, onS
         ...settings,
         themeMode: mode,
         skills: skillsText,
+        apiKey,
         profile: {...settings.profile, fullName, email, phone},
       };
       await saveSettings(updated);
@@ -75,6 +77,15 @@ export default function SettingsScreen({settings, colors, themeMode, onBack, onS
             <label style={{fontSize: 11, fontWeight: 600, color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.8, display: 'block', marginBottom: 4}}>Skills (comma-separated)</label>
             <textarea rows={3} value={skillsText} onChange={e => setSkillsText(e.target.value)} placeholder="React, TypeScript, Python, ..." style={{...inputStyle(c), resize: 'vertical'}} />
           </div>
+        </div>
+
+        <div style={glassCard}>
+          <h3 style={{fontSize: 15, fontWeight: 600, marginBottom: 12, color: c.textPrimary}}>API Key</h3>
+          <div style={{marginBottom: 4}}>
+            <label style={{fontSize: 11, fontWeight: 600, color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.8, display: 'block', marginBottom: 4}}>NVIDIA API Key</label>
+            <input value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="nvapi-..." type="password" style={inputStyle(c)} />
+          </div>
+          <p style={{fontSize: 11, color: c.textTertiary, margin: 0}}>Get a free key at <span style={{color: c.accent}}>build.nvidia.com</span></p>
         </div>
 
         <div style={glassCard}>
