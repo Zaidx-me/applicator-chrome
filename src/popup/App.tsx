@@ -1,96 +1,104 @@
-import React, {useState, useEffect, useMemo} from 'react';
-import {AppData, DEFAULT_DATA} from '../types';
-import {loadAppData} from './store/settings';
-import {light, dark} from './theme';
+import React, {useState, useEffect} from 'react';
+import {loadSettings, saveSettings} from './store/settings';
+import {getColors, type ThemeMode, type Colors} from '../theme';
+import {AppSettings} from '../types';
+import OnboardingScreen from './screens/OnboardingScreen';
 import HomeScreen from './screens/HomeScreen';
-import SettingsScreen from './screens/SettingsScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import ChatScreen from './screens/ChatScreen';
 import CoverLetterDetailScreen from './screens/CoverLetterDetailScreen';
+import SettingsScreen from './screens/SettingsScreen';
 import {CoverLetter} from '../types';
 
-type Screen = 'home' | 'settings' | 'history' | 'chat' | 'coverLetterDetail';
+type Screen = 'onboarding' | 'home' | 'settings' | 'history' | 'chat' | 'coverLetterDetail';
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('home');
-  const [data, setData] = useState<AppData>(DEFAULT_DATA);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [screen, setScreen] = useState<Screen>('onboarding');
   const [selectedLetter, setSelectedLetter] = useState<CoverLetter | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    loadAppData().then(d => {
-      setData(d);
+    loadSettings().then(s => {
+      setSettings(s);
+      setScreen(s.onboardingDone ? 'home' : 'onboarding');
       setLoaded(true);
     });
   }, []);
 
-  const colors = useMemo(() => data.theme === 'dark' ? dark : light, [data.theme]);
+  const themeMode: ThemeMode = settings?.themeMode || 'light';
+  const colors: Colors = getColors(themeMode);
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--bg', colors.bg);
-    document.documentElement.style.setProperty('--surface', colors.surface);
-    document.documentElement.style.setProperty('--surface-elevated', colors.surfaceElevated);
-    document.documentElement.style.setProperty('--text-primary', colors.textPrimary);
-    document.documentElement.style.setProperty('--text-secondary', colors.textSecondary);
-    document.documentElement.style.setProperty('--text-tertiary', colors.textTertiary);
-    document.documentElement.style.setProperty('--accent', colors.accent);
-    document.documentElement.style.setProperty('--accent-bg', colors.accentBg);
-    document.documentElement.style.setProperty('--border', colors.border);
-    document.documentElement.style.setProperty('--error', colors.error);
-    document.documentElement.style.setProperty('--green', colors.green);
-    document.documentElement.style.setProperty('--orange', colors.orange);
-    document.documentElement.style.setProperty('--blue', colors.blue);
-    document.documentElement.style.setProperty('--purple', colors.purple);
-    document.body.style.background = colors.bg;
-    document.body.style.color = colors.textPrimary;
+    const root = document.documentElement;
+    const c = colors;
+    Object.entries(c).forEach(([key, val]) => {
+      root.style.setProperty(`--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, val);
+    });
+    document.body.style.background = c.bg;
+    document.body.style.color = c.textPrimary;
   }, [colors]);
 
-  if (!loaded) {
-    return <div className="app-container" style={{alignItems: 'center', justifyContent: 'center', background: colors.bg}}>
-      <div style={{color: colors.textTertiary}}>Loading...</div>
-    </div>;
-  }
-
-  const renderScreen = () => {
-    switch (screen) {
-      case 'home':
-        return <HomeScreen
-          data={data}
-          onNavigate={setScreen}
-          onDataChange={setData}
-        />;
-      case 'settings':
-        return <SettingsScreen
-          data={data}
-          onBack={() => setScreen('home')}
-          onDataChange={setData}
-        />;
-      case 'history':
-        return <HistoryScreen
-          onBack={() => setScreen('home')}
-          onViewLetter={(l) => { setSelectedLetter(l); setScreen('coverLetterDetail'); }}
-        />;
-      case 'chat':
-        return <ChatScreen
-          data={data}
-          onBack={() => setScreen('home')}
-          onDataChange={setData}
-        />;
-      case 'coverLetterDetail':
-        return <CoverLetterDetailScreen
-          letter={selectedLetter!}
-          onBack={() => setScreen('history')}
-          data={data}
-          onDataChange={setData}
-        />;
-      default:
-        return null;
-    }
+  const handleSettingsChange = (s: AppSettings) => {
+    setSettings(s);
   };
 
-  return (
-    <div className="app-container" style={{background: colors.bg, color: colors.textPrimary}}>
-      {renderScreen()}
-    </div>
-  );
+  if (!loaded) {
+    return (
+      <div style={{height: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F7F9FC', color: '#767683', fontFamily: 'system-ui'}}>
+        Loading...
+      </div>
+    );
+  }
+
+  if (screen === 'onboarding') {
+    return <OnboardingScreen
+      settings={settings!}
+      themeMode={themeMode}
+      colors={colors}
+      onDone={() => {
+        loadSettings().then(s => {
+          setSettings(s);
+          setScreen('home');
+        });
+      }}
+    />;
+  }
+
+  const commonProps = {colors, themeMode, settings: settings!};
+
+  switch (screen) {
+    case 'home':
+      return <HomeScreen
+        {...commonProps}
+        onNavigate={setScreen}
+        onSettingsChange={handleSettingsChange}
+      />;
+    case 'settings':
+      return <SettingsScreen
+        {...commonProps}
+        onBack={() => setScreen('home')}
+        onSettingsChange={handleSettingsChange}
+      />;
+    case 'history':
+      return <HistoryScreen
+        {...commonProps}
+        onBack={() => setScreen('home')}
+        onViewLetter={(l) => { setSelectedLetter(l); setScreen('coverLetterDetail'); }}
+      />;
+    case 'chat':
+      return <ChatScreen
+        {...commonProps}
+        onBack={() => setScreen('home')}
+      />;
+    case 'coverLetterDetail':
+      return <CoverLetterDetailScreen
+        {...commonProps}
+        letter={selectedLetter!}
+        onBack={() => setScreen('history')}
+        onSettingsChange={handleSettingsChange}
+      />;
+    default:
+      return null;
+  }
 }

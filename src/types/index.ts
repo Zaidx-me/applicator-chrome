@@ -1,9 +1,19 @@
-export interface Profile {
+export interface CvExtractedProfile {
   fullName: string;
   email: string;
   phone: string;
   skills: string[];
   education: string;
+}
+
+export interface UserProfile {
+  fullName: string;
+  email: string;
+  phone: string;
+  cvUri: string | null;
+  cvFileName: string | null;
+  cvContent: string | null;
+  profileImageUri: string | null;
 }
 
 export interface CoverLetter {
@@ -12,25 +22,26 @@ export interface CoverLetter {
   subject: string;
   body: string;
   toEmail: string;
+  toPhone?: string;
   company: string;
   role: string;
   createdAt: number;
   sent: boolean;
 }
 
-export interface JobData {
-  role_type: string;
+export interface ExtractedJob {
   company: string;
+  role_type: string;
   location?: string;
   extracted_email?: string;
-  coverLetter?: CoverLetter;
 }
 
-export interface ExtractedJobs {
+export interface BatchResult {
   id: string;
-  jobs: JobData[];
-  sourceText: string;
+  jobs: ExtractedJob[];
+  coverLetters: CoverLetter[];
   processedAt: number;
+  sourceText: string;
 }
 
 export interface ChatMessage {
@@ -40,24 +51,12 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-export interface AppData {
-  nvidiaApiKey: string;
+export interface AppSettings {
+  toEmail: string;
+  cvLink: string;
+  skills: string;
+  onboardingDone: boolean;
+  themeMode: 'light' | 'dark';
   aiModel: string;
-  profile: Profile;
-  coverLetters: CoverLetter[];
-  extractions: ExtractedJobs[];
-  chatMessages: ChatMessage[];
-  targetKeywords: string;
-  theme: 'light' | 'dark';
+  profile: UserProfile;
 }
-
-export const DEFAULT_DATA: AppData = {
-  nvidiaApiKey: '',
-  aiModel: 'meta/llama-3.1-8b-instruct',
-  profile: {fullName: '', email: '', phone: '', skills: [], education: ''},
-  coverLetters: [],
-  extractions: [],
-  chatMessages: [],
-  targetKeywords: 'internship, SWE, backend, frontend, fullstack, software engineer, developer, IT',
-  theme: 'light',
-};
